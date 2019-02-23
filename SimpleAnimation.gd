@@ -16,10 +16,12 @@ export var current_frame = 0 setget _set_current_frame
 
 var frame_sequence = PoolIntArray()
 var elapse_time = 0
+var in_tree_editor = false
 
 signal animation_finished()
 
 func _enter_tree():
+	in_tree_editor = true
 	_set_frames_str(physical_frames)
 
 func _set_frames_str(value):
@@ -53,8 +55,9 @@ func _set_fps(value):
 	if value == null || value <= 0:
 		return
 	
-	_set_fix_fps(true)
 	fps = float(value)
+	if in_tree_editor:
+		_set_fix_fps(true)
 	
 	_update_fps_and_duration()
 	property_list_changed_notify()
@@ -67,8 +70,9 @@ func _set_duration(value):
 	if value == null || value <= 0:
 		return
 
-	_set_fix_duration(true)
 	duration = float(value)
+	if in_tree_editor:
+		_set_fix_duration(true)
 	
 	_update_fps_and_duration()
 	property_list_changed_notify()
@@ -91,7 +95,6 @@ func _set_current_frame(value):
 func _process(delta):
 	if !playing:
 		return
-	
 	elapse_time += delta
 	var dif = elapse_time - frame_period
 	if  dif >= 0:

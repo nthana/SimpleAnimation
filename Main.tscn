@@ -12,6 +12,7 @@ scale = Vector2( 4, 4 )
 texture = ExtResource( 1 )
 vframes = 4
 hframes = 4
+frame = 15
 script = ExtResource( 2 )
 _sections_unfolded = [ "Animation", "Transform" ]
 physical_frames = "0-15"
@@ -23,6 +24,6 @@ fix_duration = false
 duration = 3.2
 playing = true
 loop = true
-current_frame = 0
+current_frame = 15
 
 
