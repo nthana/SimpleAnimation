@@ -16,12 +16,12 @@ export var current_frame = 0 setget _set_current_frame
 
 var frame_sequence = PoolIntArray()
 var elapse_time = 0
-var in_tree_editor = false
+var on_loading_editor = true
 
 signal animation_finished()
 
 func _enter_tree():
-	in_tree_editor = true
+	on_loading_editor = false
 	_set_frames_str(physical_frames)
 
 func _set_frames_str(value):
@@ -56,7 +56,7 @@ func _set_fps(value):
 		return
 	
 	fps = float(value)
-	if in_tree_editor:
+	if !on_loading_editor:
 		_set_fix_fps(true)
 	
 	_update_fps_and_duration()
@@ -71,7 +71,7 @@ func _set_duration(value):
 		return
 
 	duration = float(value)
-	if in_tree_editor:
+	if !on_loading_editor:
 		_set_fix_duration(true)
 	
 	_update_fps_and_duration()
@@ -93,6 +93,7 @@ func _set_current_frame(value):
 	self.frame = frame_sequence[current_frame] # update sprite image
 
 func _process(delta):
+	on_loading_editor = false
 	if !playing:
 		return
 	elapse_time += delta
@@ -133,6 +134,7 @@ func play(from_start = false):
 	playing = true
 	
 func play_new(new_frames_str, new_fps):
+	on_loading_editor = false
 	stop(true)
 	_set_frames_str(new_frames_str)
 	_set_fps(new_fps)
