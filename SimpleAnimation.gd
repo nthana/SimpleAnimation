@@ -2,23 +2,29 @@ tool
 
 extends Sprite
 
-export (String) var physical_frames = "0-7,10,15" setget _set_frames_str
-export (int) var frame_count = 0 setget _set_frame_count
+export (String) var physical_frames = "1,3,5-7" setget _set_frames_str
+export (int) var frame_count = 5 setget _set_frame_count
 export (bool) var fix_fps = true setget _set_fix_fps
 export (float) var fps = 5 setget _set_fps
-export (float) var frame_period = 0 setget _set_frame_period # frame_period = 1/fps
+export (float) var frame_period = 0.2 setget _set_frame_period # frame_period = 1/fps
 export (bool) var fix_duration = false setget _set_fix_duration
-export (float) var duration = 0 setget _set_duration # duration = frame_count * frame_period
+export (float) var duration = 1 setget _set_duration # duration = frame_count * frame_period
 
-export var playing = true
+export var playing = true setget _set_playing
 export var loop = false
 export var current_frame = 0 setget _set_current_frame
 
 var frame_sequence = PoolIntArray()
 var elapse_time = 0
+export var editor_preview = true
 var on_loading_editor = true
 
 signal animation_finished()
+
+func _set_playing(value):
+	playing = value
+	if Engine.editor_hint && playing == true:
+		play(true)
 
 func _enter_tree():
 	on_loading_editor = false
@@ -54,7 +60,7 @@ func _set_fps(value):
 	if value == null || value <= 0:
 		return
 	
-	if on_loading_editor && !fix_fps:
+	if Engine.editor_hint && on_loading_editor && !fix_fps:
 		return
 
 	fps = float(value)
@@ -70,7 +76,7 @@ func _set_duration(value):
 	if value == null || value <= 0:
 		return
 
-	if on_loading_editor && !fix_duration:
+	if Engine.editor_hint && on_loading_editor && !fix_duration:
 		return
 		
 	duration = float(value)
@@ -85,19 +91,22 @@ func _update_fps_and_duration():
 	else:
 		fps = frame_count / duration
 		
-	frame_period = 1/fps
+	frame_period = 1.0/fps
 
 
 func _set_current_frame(value):
-	if current_frame < 0 || current_frame >= frame_sequence.size():
+	if value < 0 || value >= frame_sequence.size():
 		return
 	current_frame = value
 	self.frame = frame_sequence[current_frame] # update sprite image
 
-func _process(delta):
-	on_loading_editor = false
+func _process(delta):		
+	if Engine.editor_hint && !editor_preview:
+		return
+		
 	if !playing:
 		return
+		
 	elapse_time += delta
 	var dif = elapse_time - frame_period
 	if  dif >= 0:
@@ -105,6 +114,8 @@ func _process(delta):
 		var have_next = _next_frame()
 		if !have_next:
 			stop()
+		property_list_changed_notify()
+
 			
 
 # return true when have next frame
@@ -113,7 +124,7 @@ func _next_frame():
 	if frame_count == 0:
 		return false # should not have this case
 		
-	if current_frame == frame_count-1:
+	if current_frame >= frame_count-1:
 		if !loop:
 			emit_signal("animation_finished")
 			return false # no next frame
@@ -136,7 +147,6 @@ func play(from_start = false):
 	playing = true
 	
 func play_new(new_frames_str, new_fps):
-	on_loading_editor = false
 	stop(true)
 	_set_frames_str(new_frames_str)
 	_set_fps(new_fps)
