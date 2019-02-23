@@ -24,12 +24,13 @@ func _enter_tree():
 
 func _set_frames_str(value):
 	var pool = get_int_list(value)
-	if pool == null:
+	if pool == null || pool.size() == 0:
 		return
 
 	physical_frames = value
 	frame_sequence = pool
 	
+	current_frame = 0
 	frame_count = frame_sequence.size() # update frame_count
 	_update_fps_and_duration()
 	property_list_changed_notify()
