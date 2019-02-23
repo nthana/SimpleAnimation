@@ -37,8 +37,7 @@ func _set_frames_str(value):
 	_update_fps_and_duration()
 	property_list_changed_notify()
 
-# frame_count is read-only
-func _set_frame_count(value): 
+func _set_frame_count(value): # read-only
 	pass
 
 func _set_fix_fps(value):
@@ -59,11 +58,11 @@ func _set_fps(value):
 	if !on_loading_editor:
 		_set_fix_fps(true)
 	
-	_update_fps_and_duration()
-	property_list_changed_notify()
+	if fix_fps:
+		_update_fps_and_duration()
+		property_list_changed_notify()
 	
-# frame_period is read-only
-func _set_frame_period(value): 
+func _set_frame_period(value): # read-only
 	pass
 
 func _set_duration(value):
@@ -74,8 +73,9 @@ func _set_duration(value):
 	if !on_loading_editor:
 		_set_fix_duration(true)
 	
-	_update_fps_and_duration()
-	property_list_changed_notify()
+	if fix_duration:
+		_update_fps_and_duration()
+		property_list_changed_notify()
 	
 func _update_fps_and_duration():
 	if fix_fps:
@@ -146,8 +146,8 @@ func pause_toggle():
 	else:
 		play()
 	
-# ค้างที่ภาพที่กำลังเล่นอยู่
-# แต่ถ้า start จะ reset ไปต้น
+# pause at the current frame
+# But, if the reset is true, will go to the first frame
 func stop(reset = false):
 	playing = false
 	if reset:
