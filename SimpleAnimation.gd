@@ -31,10 +31,9 @@ func _set_frames_str(value):
 	frame_sequence = pool
 	
 	current_frame = 0
-	frame_count = frame_sequence.size() # update frame_count
+	frame_count = frame_sequence.size()
 	_update_fps_and_duration()
 	property_list_changed_notify()
-	pass
 
 # frame_count is read-only
 func _set_frame_count(value): 
