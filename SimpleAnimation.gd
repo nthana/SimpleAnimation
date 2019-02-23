@@ -54,13 +54,14 @@ func _set_fps(value):
 	if value == null || value <= 0:
 		return
 	
+	if on_loading_editor && !fix_fps:
+		return
+
 	fps = float(value)
-	if !on_loading_editor:
-		_set_fix_fps(true)
+	_set_fix_fps(true)
 	
-	if fix_fps:
-		_update_fps_and_duration()
-		property_list_changed_notify()
+	_update_fps_and_duration()
+	property_list_changed_notify()
 	
 func _set_frame_period(value): # read-only
 	pass
@@ -69,13 +70,14 @@ func _set_duration(value):
 	if value == null || value <= 0:
 		return
 
+	if on_loading_editor && !fix_duration:
+		return
+		
 	duration = float(value)
-	if !on_loading_editor:
-		_set_fix_duration(true)
+	_set_fix_duration(true)
 	
-	if fix_duration:
-		_update_fps_and_duration()
-		property_list_changed_notify()
+	_update_fps_and_duration()
+	property_list_changed_notify()
 	
 func _update_fps_and_duration():
 	if fix_fps:
